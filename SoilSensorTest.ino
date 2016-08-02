@@ -43,7 +43,13 @@ void setup()
 
   pinMode(lightPin, OUTPUT);
   digitalWrite(lightPin, HIGH);
+  
+  // Start timer
+  startTime.restart();
+  
   //Serial.begin(9600);
+  //Serial.println("Started!");
+
 }
 
 void loop() 
@@ -52,8 +58,8 @@ void loop()
   soilSensor.measure(&temperature, &humidity, &dewpoint);
   buttonState = digitalRead(buttonPin);
   
-  //if((ledStatus && startTime.hasPassed(64800)) || (!ledStatus && startTime.hasPassed(28800)))
-  if((ledStatus && startTime.hasPassed(300)))
+  // 18 hours on and 8 hours off
+  if((ledStatus && startTime.hasPassed(64800)) || (!ledStatus && startTime.hasPassed(28800)))
   {
     ledStatus = !ledStatus;
     startTime.restart();
@@ -104,7 +110,7 @@ void loop()
   //  fanVal = 0;
   //}
 
-  if(lightPin)
+  if(ledStatus)
   {
     digitalWrite(lightPin,HIGH);
   }
@@ -113,6 +119,7 @@ void loop()
     digitalWrite(lightPin, LOW);
   }
 
+  //Serial.println(startTime.elapsed());
   
   // Wait 100 ms before next measurement
   delay(100);  

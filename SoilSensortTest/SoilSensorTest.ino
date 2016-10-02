@@ -37,9 +37,9 @@ void setup()
   pinMode(screenPin, OUTPUT);
   //pinMode(fanPin, OUTPUT);
   
-  lcd.begin(16, 2);
+  /*lcd.begin(16, 2);
   lcd.setBacklight(HIGH);
-  lastPress = millis();
+  lastPress = millis();*/
 
   pinMode(lightPin, OUTPUT);
   digitalWrite(lightPin, HIGH);
@@ -55,17 +55,17 @@ void setup()
 void loop() 
 {
   // Take measurement
-  soilSensor.measure(&temperature, &humidity, &dewpoint);
-  buttonState = digitalRead(buttonPin);
+  //soilSensor.measure(&temperature, &humidity, &dewpoint);
+  //buttonState = digitalRead(buttonPin);
   
   // 18 hours on and 8 hours off
-  if((ledStatus && startTime.hasPassed(64800)) || (!ledStatus && startTime.hasPassed(28800)))
+  if((ledStatus && startTime.hasPassed(57600)) || (!ledStatus && startTime.hasPassed(28800)))
   {
     ledStatus = !ledStatus;
     startTime.restart();
   }
 
-  if(displayMode == 0)
+  /*if(displayMode == 0)
   {
     lcd.setCursor(0, 0);
     lcd.print("Temperature:");
@@ -100,7 +100,7 @@ void loop()
   {
     lcd.noDisplay();
     lcd.setBacklight(LOW);
-  }
+  }*/
 
   // FAN Stuff
   //analogWrite(fanPin, fanVal);

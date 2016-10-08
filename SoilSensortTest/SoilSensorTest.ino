@@ -22,6 +22,7 @@ float humidity;
 float dewpoint;
 int buttonState = 0;
 int displayMode = 0;
+int hours = 10;
 //int fanVal = 0;
 unsigned long lastPress;
 Chrono startTime(Chrono::SECONDS); 
@@ -59,7 +60,7 @@ void loop()
   //buttonState = digitalRead(buttonPin);
   
   // 18 hours on and 8 hours off
-  if((ledStatus && startTime.hasPassed(57600)) || (!ledStatus && startTime.hasPassed(28800)))
+  if((ledStatus && startTime.hasPassed(hours*3600)) || (!ledStatus && startTime.hasPassed((24-hours)*3600)))
   {
     ledStatus = !ledStatus;
     startTime.restart();

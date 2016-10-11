@@ -11,7 +11,6 @@
 // Sensor pins
 const uint8_t dataPin = 6;
 const uint8_t clockPin = 7;
-//const uint8_t fanPin = 3;
 const int lightPin = 11;
 const uint8_t buttonPin = 2;
 const int screenPin =  13;
@@ -21,9 +20,8 @@ float temperature;
 float humidity;
 float dewpoint;
 int buttonState = 0;
-int displayMode = 0;
+//int displayMode = 0;
 int hours = 10;
-//int fanVal = 0;
 unsigned long lastPress;
 Chrono startTime(Chrono::SECONDS); 
 bool ledStatus = true;
@@ -36,11 +34,10 @@ void setup()
 {
   pinMode(buttonPin, INPUT);
   pinMode(screenPin, OUTPUT);
-  //pinMode(fanPin, OUTPUT);
   
-  /*lcd.begin(16, 2);
+  lcd.begin(16, 2);
   lcd.setBacklight(HIGH);
-  lastPress = millis();*/
+  lastPress = millis();
 
   pinMode(lightPin, OUTPUT);
   digitalWrite(lightPin, HIGH);
@@ -57,7 +54,7 @@ void loop()
 {
   // Take measurement
   //soilSensor.measure(&temperature, &humidity, &dewpoint);
-  //buttonState = digitalRead(buttonPin);
+  buttonState = digitalRead(buttonPin);
   
   // 18 hours on and 8 hours off
   if((ledStatus && startTime.hasPassed(hours*3600)) || (!ledStatus && startTime.hasPassed((24-hours)*3600)))
@@ -67,13 +64,12 @@ void loop()
   }
 
   /*if(displayMode == 0)
-  {
+  {*/
     lcd.setCursor(0, 0);
-    lcd.print("Temperature:");
+    lcd.print("Hours: ");
     lcd.setCursor(0, 1);
-    lcd.print(temperature);
-    lcd.print(" C");
-  }
+    lcd.print(startTime.elapsed() / 3600);
+  /*}
   else
   {
     lcd.setCursor(0, 0);
@@ -81,13 +77,13 @@ void loop()
     lcd.setCursor(0, 1);
     lcd.print(humidity);
     lcd.print(" %");
-  }
+  }*/
 
   if (buttonState == HIGH) {
     if((millis() - lastPress) < 10000)
     {
       lcd.clear();
-      displayMode = 1 - displayMode;
+      //displayMode = 1 - displayMode;
     }
     lastPress = millis();
   } 
@@ -101,7 +97,7 @@ void loop()
   {
     lcd.noDisplay();
     lcd.setBacklight(LOW);
-  }*/
+  }
 
   // FAN Stuff
   //analogWrite(fanPin, fanVal);
@@ -119,8 +115,6 @@ void loop()
   {
     digitalWrite(lightPin, LOW);
   }
-
-  //Serial.println(startTime.elapsed());
   
   // Wait 100 ms before next measurement
   delay(100);  

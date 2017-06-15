@@ -1,15 +1,15 @@
 # Pull base image
-FROM resin/rpi-raspbian:wheezy
+FROM resin/rpi-raspbian:jessie
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
-    python \
-    python-dev \
-    python-pip \
-    python-virtualenv 
+RUN apt-get update && apt-get install -y python3 wget
+RUN wget https://bootstrap.pypa.io/get-pip.py
+RUN python3 get-pip.py
 
-RUN sudo pip install --upgrade pip 
-RUN sudo pip install --upgrade virtualenv  
+RUN mkdir /data
+RUN virtualenv -p python3 /data
+
+RUN pip install virtualenv  
 
 # Define working directory
 WORKDIR /data

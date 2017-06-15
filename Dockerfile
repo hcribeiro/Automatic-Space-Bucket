@@ -7,9 +7,8 @@ RUN wget https://bootstrap.pypa.io/get-pip.py
 RUN python3 get-pip.py
 
 RUN mkdir /data
+RUN pip install virtualenv 
 RUN virtualenv -p python3 /data
-
-RUN pip install virtualenv  
 
 # Define working directory
 WORKDIR /data

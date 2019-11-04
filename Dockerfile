@@ -12,7 +12,7 @@ RUN virtualenv -p python3 /data
 
 # Define working directory
 WORKDIR /data
-COPY * /data
+COPY * /data/
 
 # Define default command
 CMD ["sh"]

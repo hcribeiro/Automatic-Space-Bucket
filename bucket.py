@@ -1,31 +1,36 @@
-import sys
-import time
-import datetime
-import RPi.GPIO as GPIO
+import sys, os, time, datetime
+from gpiozero import LED, DigitalOutputDevice, SmoothedInputDevice
 
-LIGHT_PIN = 24
+LIGHT_PIN = 26
+FANS_PIN = 20
+PUMP_PIN = 21
+SENSOR_PIN = 16
 
 startTime = datetime.datetime.now().time()
-endTime = (datetime.datetime.now() + datetime.timedelta(seconds=28800)).time()
+endTime = (datetime.datetime.now() + datetime.timedelta(hours=23)).time()
 
 def main():
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(LIGHT_PIN, GPIO.OUT)
-    try:
-        while(True):
-            if (time_in_range(startTime, endTime, datetime.datetime.now().time())):
-                GPIO.output(LIGHT_PIN, True)
-                print("LED turned on!")
-            elif not (time_in_range(startTime, endTime, datetime.datetime.now().time())):
-                GPIO.output(LIGHT_PIN, False)
-                print("LED turned off!")
-
-            print("Time Now: " + str(datetime.datetime.now().time()))
+    led = LED(LIGHT_PIN, active_high=False)
+    fans = DigitalOutputDevice(FANS_PIN, active_high=False)
+    pumps = DigitalOutputDevice(PUMP_PIN, active_high=False)
+    while(True):
+        os.system('clear')
+        now = datetime.datetime.now().time() 
+        if (time_in_range(startTime, endTime, now)):
+            led.on()
+            fans.on()
+            print("LED turned on!")
+            print("Time Now: " + str(now))
             print("Start Time: " + str(startTime))
             print("End Time: " + str(endTime))
-            time.sleep(10)
-    finally:
-        GPIO.cleanup()
+        elif not (time_in_range(startTime, endTime, now)):
+            led.off()
+            fans.off()
+            print("LED turned off!")
+            print("Time Now: " + str(now))
+            print("Start Time: " + str(startTime))
+            print("End Time: " + str(endTime))
+        time.sleep(10)
 
 def time_in_range(startTime, endTime, nowTime):
     if startTime < endTime:

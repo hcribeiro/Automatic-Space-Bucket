@@ -2,7 +2,7 @@
 FROM raspbian/jessie
 
 # Install dependencies
-RUN apt-get update && apt-get install -y python3 wget
+RUN apt-get update && apt-get install -y python3 wget python-rpi.gpio
 RUN wget https://bootstrap.pypa.io/get-pip.py
 RUN python3 get-pip.py
 

@@ -14,5 +14,8 @@ RUN virtualenv -p python3 /data
 WORKDIR /data
 COPY * /data/
 
+# Donwload libraries
+RUN pip3 install -r requirements.txt
+
 # Define default command
-CMD ["sh"]
+CMD ["python3 bucket"]

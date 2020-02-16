@@ -1,14 +1,12 @@
 # Automatic Space Bucket
-Driver for Arduino boards to control the environment inside a spacebucket. At the moment, the sofware can:
+Driver for RPI boards to control the environment inside a spacebucket. At the moment, the sofware can:
 * Drive a powerful LED (through a transistor)
-* Control PWM fans (currently commented out)
-* Read Temperature/Humidity from a soil sensor
-* Control a display, display turns off when not in use, a button toggles between Temperature and Humidity output
+* Read Soil Humidity from a sensor
+* Trigger a pump when Soil Humidity drops below a threshold
+* Controls fans, turning on when the LED is on.
 
 TODO:
 * 3d files for Arduino and custom board
 * Custom board design files
-* Wifi module to output current values to a server (maybe)
+* Control PWM fans 
 * Logic to disable LED if temperature reaches a certain level
-* Logic to switch between modes for different plants
-* Pump to add water (maybe)

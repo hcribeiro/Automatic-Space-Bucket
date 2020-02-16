@@ -1,4 +1,6 @@
 Adafruit-Blinka==3.9.0
 adafruit-circuitpython-ads1x15==2.1.2
+Adafruit-PlatformDetect==2.1.0
+Adafruit-PureIO==1.0.4
 gpiozero==1.5.1
 RPi.GPIO==0.7.0

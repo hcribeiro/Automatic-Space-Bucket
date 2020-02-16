@@ -8,7 +8,7 @@ FANS_PIN = 20
 PUMP_PIN = 21
 
 startTime = datetime.datetime.now().time()
-endTime = (datetime.datetime.now() + datetime.timedelta(hours=23)).time()
+endTime = (datetime.datetime.now() + datetime.timedelta(hours=12)).time()
 
 def main():
     i2c = busio.I2C(board.SCL, board.SDA)

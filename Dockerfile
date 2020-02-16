@@ -15,7 +15,7 @@ WORKDIR /data
 COPY * /data/
 
 # Donwload libraries
-RUN sudo pip3 install --upgrade setuptools
+RUN pip3 install --upgrade setuptools
 RUN pip3 install -r requirements.txt
 
 # Define default command

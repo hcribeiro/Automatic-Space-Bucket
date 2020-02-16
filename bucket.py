@@ -27,12 +27,12 @@ def main():
             fans.on()
     
             # Read from sensor
-#            if (reading < 2500):
-#                pumps.on()
-#                print("Pump turned on!")
-#            else:
-#                pumps.off()
-#                print("Pump turned off!")
+            if (sensor.value < 20000):
+                pumps.on()
+                print("Pump turned on!")
+            else:
+                pumps.off()
+                print("Pump turned off!")
             print("LED turned on!")
             print("Time Now: " + str(now))
             print("Start Time: " + str(startTime))

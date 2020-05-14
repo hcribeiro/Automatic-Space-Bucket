@@ -6,7 +6,6 @@ from gpiozero import LED, DigitalOutputDevice, SmoothedInputDevice
 
 config = []
 dryness_threshold = -1
-serverThread = None
 
 @app.route('/')
 def index(humidity=0, light_status='Off', plant='N/a', logs=''):

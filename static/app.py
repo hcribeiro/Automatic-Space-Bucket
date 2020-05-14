@@ -6,8 +6,6 @@ from gpiozero import LED, DigitalOutputDevice, SmoothedInputDevice
 
 config = []
 dryness_threshold = -1
-startTime = datetime.datetime.now().time()
-endTime = (datetime.datetime.now() + datetime.timedelta(hours=23.5)).time()
 
 app = Flask(__name__)
 
@@ -29,16 +27,18 @@ def time_in_range(startTime:time, endTime:time, nowTime:time) -> time:
         return nowTime >= startTime or nowTime <= endTime
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)
     config = load_config()
     difference = int(config['dryValue']) - int(config['wetValue'])
-    dryness_threshold = int(config['dryValue']) - (difference * int(config['hummidityThresh']))
+    dryness_threshold = int(config['dryValue']) - (difference * float(config['humidityThresh']))
     i2c = busio.I2C(board.SCL, board.SDA)
     ads = ADS.ADS1115(i2c)
     led = LED(int(config['lightPin']), active_high=False)
     fans = DigitalOutputDevice(int(config['fanPin']), active_high=False)
     pumps = DigitalOutputDevice(int(config['pumpPin']), active_high=False)
     sensor = AnalogIn(ads, ADS.P0)
+    startTime = datetime.datetime.now().time()
+    endTime = (datetime.datetime.now() + datetime.timedelta(hours=float(config['sunHours']))).time()
     while(True):
         os.system('clear')
         now = datetime.datetime.now().time() 

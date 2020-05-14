@@ -27,7 +27,7 @@ def time_in_range(startTime:time, endTime:time, nowTime:time) -> time:
 
 if __name__ == '__main__':
     global serverThread
-    serverThread = threading.Thread(target=app.run, daemon=True)
+    serverThread = threading.Thread(target=app.run, daemon=True, kwargs={'host':'0.0.0.0'})
     serverThread.start()
     config = load_config()
     difference = int(config['dryValue']) - int(config['wetValue'])
@@ -41,7 +41,6 @@ if __name__ == '__main__':
     startTime = datetime.datetime.now().time()
     endTime = (datetime.datetime.now() + datetime.timedelta(hours=float(config['sunHours']))).time()
     while(True):
-        os.system('clear')
         now = datetime.datetime.now().time() 
         if (time_in_range(startTime, endTime, now)):
             led.on()
@@ -58,10 +57,11 @@ if __name__ == '__main__':
             led.off()
             fans.off()
             print("LED turned off!")
-        print("Time Now: " + str(now))
-        print("Start Time: " + str(startTime))
-        print("End Time: " + str(endTime))
-        print("Sensor: " + str(sensor.value))
-        print("Threshold: " + str(dryness_threshold))
+        #print("Time Now: " + str(now))
+        #print("Start Time: " + str(startTime))
+        #print("End Time: " + str(endTime))
+        #print("Sensor: " + str(sensor.value))
+        #print("Threshold: " + str(dryness_threshold))
         time.sleep(10)
+        #os.system('clear')
     serverThread.join()

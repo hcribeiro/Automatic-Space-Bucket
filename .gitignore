@@ -3,3 +3,5 @@ include/
 lib/
 pip-*
 .vscode*
+__pycache__/
+__pycache__/*

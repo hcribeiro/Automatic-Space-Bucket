@@ -1,13 +1,12 @@
 from flask import Flask, render_template, request
-import sys, os, time, datetime, board, busio, yaml
+import sys, os, time, datetime, board, busio, yaml, threading
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 from gpiozero import LED, DigitalOutputDevice, SmoothedInputDevice
 
 config = []
 dryness_threshold = -1
-
-app = Flask(__name__)
+serverThread = None
 
 @app.route('/')
 def index(humidity=0, light_status='Off', plant='N/a', logs=''):
@@ -27,7 +26,10 @@ def time_in_range(startTime:time, endTime:time, nowTime:time) -> time:
         return nowTime >= startTime or nowTime <= endTime
 
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True)
+    global serverThread
+    app = Flask(__name__)
+    serverThread = threading.Thread(target=app.run, daemon=True)
+    serverThread.start()
     config = load_config()
     difference = int(config['dryValue']) - int(config['wetValue'])
     dryness_threshold = int(config['dryValue']) - (difference * float(config['humidityThresh']))
@@ -63,3 +65,4 @@ if __name__ == '__main__':
         print("Sensor: " + str(sensor.value))
         print("Threshold: " + str(dryness_threshold))
         time.sleep(10)
+    serverThread.join()

@@ -6,8 +6,6 @@ from gpiozero import LED, DigitalOutputDevice, SmoothedInputDevice
 
 config = []
 dryness_threshold = -1
-humidity = 0
-startTime = endTime = None
 app = Flask("SpaceBucket")
 
 @app.route('/')
@@ -46,10 +44,10 @@ if __name__ == '__main__':
     fans = DigitalOutputDevice(int(config['fanPin']), active_high=False)
     pumps = DigitalOutputDevice(int(config['pumpPin']), active_high=False)
     sensor = AnalogIn(ads, ADS.P0)
-    humidity = sensor.value
     startTime = datetime.datetime.now().time()
     endTime = (datetime.datetime.now() + datetime.timedelta(hours=float(config['sunHours']))).time()
     while(True):
+        humidity = sensor.value
         now = datetime.datetime.now().time() 
         if (time_in_range(startTime, endTime, now)):
             led.on()

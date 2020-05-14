@@ -6,10 +6,18 @@ from gpiozero import LED, DigitalOutputDevice, SmoothedInputDevice
 
 config = []
 dryness_threshold = -1
-app = Flask(__name__)
+humidity = 0
+startTime = endTime = None
+app = Flask("SpaceBucket")
 
 @app.route('/')
-def index(humidity=0, light_status='Off', plant='N/a', logs=''):
+def index(light_status='Off', plant='N/a', logs=''):
+    plant = config['plant']
+    now = datetime.datetime.now().time() 
+    if (time_in_range(startTime, endTime, now)):
+        light_status = 'On'
+    elif not (time_in_range(startTime, endTime, now)):
+        light_status = 'Off'
     return render_template('dashboard.html', humidity=humidity, light_status=light_status, plant=plant, logs=logs)
 
 def load_config():
@@ -26,7 +34,7 @@ def time_in_range(startTime:time, endTime:time, nowTime:time) -> time:
         return nowTime >= startTime or nowTime <= endTime
 
 if __name__ == '__main__':
-    global serverThread
+    global humidity, startTime, endTime
     serverThread = threading.Thread(target=app.run, daemon=True, kwargs={'host':'0.0.0.0'})
     serverThread.start()
     config = load_config()
@@ -38,6 +46,7 @@ if __name__ == '__main__':
     fans = DigitalOutputDevice(int(config['fanPin']), active_high=False)
     pumps = DigitalOutputDevice(int(config['pumpPin']), active_high=False)
     sensor = AnalogIn(ads, ADS.P0)
+    humidity = sensor.value
     startTime = datetime.datetime.now().time()
     endTime = (datetime.datetime.now() + datetime.timedelta(hours=float(config['sunHours']))).time()
     while(True):

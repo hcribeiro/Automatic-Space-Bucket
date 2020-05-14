@@ -6,6 +6,7 @@ from gpiozero import LED, DigitalOutputDevice, SmoothedInputDevice
 
 config = []
 dryness_threshold = -1
+app = Flask(__name__)
 
 @app.route('/')
 def index(humidity=0, light_status='Off', plant='N/a', logs=''):
@@ -26,7 +27,6 @@ def time_in_range(startTime:time, endTime:time, nowTime:time) -> time:
 
 if __name__ == '__main__':
     global serverThread
-    app = Flask(__name__)
     serverThread = threading.Thread(target=app.run, daemon=True)
     serverThread.start()
     config = load_config()

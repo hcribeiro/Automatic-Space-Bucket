@@ -16,15 +16,14 @@ def index(light_status='Off', plant='N/a', logs=''):
         light_status = 'On'
     elif not (time_in_range(startTime, endTime, now)):
         light_status = 'Off'
-    return render_template('dashboard.html', humidity=humidity, light_status=light_status, plant=plant, logs=logs)
+    return render_template('dashboard.html', humidity=humidity, threshold=dryness_threshold, light_status=light_status, plant=plant, logs=logs)
 
 def load_config():
-    global dryness_threshold
     with open(os.path.expanduser("~/.bucket/config"), "r") as config_file:
         config = yaml.load(config_file, Loader=yaml.BaseLoader)
     return config
 
-def time_in_range(startTime:time, endTime:time, nowTime:time) -> time:
+def time_in_range(startTime:time, endTime:time, nowTime:time) -> bool:
     """Returns bool dependant on if nowTime is between startTime and endTime"""
     if startTime < endTime:
         return nowTime >= startTime and nowTime <= endTime
@@ -51,19 +50,18 @@ if __name__ == '__main__':
         now = datetime.datetime.now().time() 
         if (time_in_range(startTime, endTime, now)):
             led.on()
-            fans.on()    
-            # Read from sensor
-            if (sensor.value > dryness_threshold):
-                pumps.on()
-                print("Pump turned on!")
-            else:
-                pumps.off()
-                print("Pump turned off!")
+            fans.on()
             print("LED turned on!")
         elif not (time_in_range(startTime, endTime, now)):
             led.off()
             fans.off()
             print("LED turned off!")
+        if (sensor.value > dryness_threshold):
+            pumps.on()
+            print("Pump turned on!")
+        else:
+            pumps.off()
+            print("Pump turned off!")
         #print("Time Now: " + str(now))
         #print("Start Time: " + str(startTime))
         #print("End Time: " + str(endTime))

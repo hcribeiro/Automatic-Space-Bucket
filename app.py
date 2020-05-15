@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-import sys, os, time, datetime, board, busio, yaml, threading
+import sys, os, time, datetime, board, busio, yaml, threading, logging
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 from gpiozero import LED, DigitalOutputDevice, SmoothedInputDevice
@@ -16,7 +16,7 @@ def index(light_status='Off', plant='N/a', logs=''):
         light_status = 'On'
     elif not (time_in_range(startTime, endTime, now)):
         light_status = 'Off'
-    return render_template('dashboard.html', humidity=humidity, threshold=dryness_threshold, light_status=light_status, plant=plant, logs=logs)
+    return render_template('dashboard.html', humidity=humidity, threshold=dryness_threshold, light_status=light_status, startTime=startTime, endTime=endTime, plant=plant, logs=logs)
 
 def load_config():
     with open(os.path.expanduser("~/.bucket/config"), "r") as config_file:
@@ -31,6 +31,12 @@ def time_in_range(startTime:time, endTime:time, nowTime:time) -> bool:
         return nowTime >= startTime or nowTime <= endTime
 
 if __name__ == '__main__':
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.WARN)
+    logger.addHandler(ch)
+
     global humidity, startTime, endTime
     serverThread = threading.Thread(target=app.run, daemon=True, kwargs={'host':'0.0.0.0'})
     serverThread.start()
@@ -51,22 +57,21 @@ if __name__ == '__main__':
         if (time_in_range(startTime, endTime, now)):
             led.on()
             fans.on()
-            print("LED turned on!")
+            logger.info("LED turned on!")
         elif not (time_in_range(startTime, endTime, now)):
             led.off()
             fans.off()
-            print("LED turned off!")
+            logger.info("LED turned off!")
         if (sensor.value > dryness_threshold):
             pumps.on()
-            print("Pump turned on!")
+            logger.info("Pump turned on!")
         else:
             pumps.off()
-            print("Pump turned off!")
-        #print("Time Now: " + str(now))
-        #print("Start Time: " + str(startTime))
-        #print("End Time: " + str(endTime))
-        #print("Sensor: " + str(sensor.value))
-        #print("Threshold: " + str(dryness_threshold))
+            logger.info("Pump turned off!")
+        logger.debug("Time Now: " + str(now))
+        logger.debug("Start Time: " + str(startTime))
+        logger.debug("End Time: " + str(endTime))
+        logger.debug("Sensor: " + str(sensor.value))
+        logger.debug("Threshold: " + str(dryness_threshold))
         time.sleep(10)
-        #os.system('clear')
     serverThread.join()

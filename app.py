@@ -6,17 +6,22 @@ from gpiozero import LED, DigitalOutputDevice, SmoothedInputDevice
 
 config = []
 dryness_threshold = -1
+logs = []
 app = Flask("SpaceBucket")
 
 @app.route('/')
-def index(light_status='Off', plant='N/a', logs=''):
+def index(light_status='Off', plant='N/a'):
     plant = config['plant']
     now = datetime.datetime.now().time() 
     if (time_in_range(startTime, endTime, now)):
         light_status = 'On'
     elif not (time_in_range(startTime, endTime, now)):
         light_status = 'Off'
-    return render_template('dashboard.html', humidity=humidity, threshold=dryness_threshold, light_status=light_status, startTime=startTime, endTime=endTime, plant=plant, logs=logs)
+    return render_template('dashboard.html', humidity=humidity, threshold=dryness_threshold, light_status=light_status, startTime=startTime, endTime=endTime, plant=plant)
+
+@app.route('/water')
+def water():
+    return render_template('water.html')
 
 def load_config():
     with open(os.path.expanduser("~/.bucket/config"), "r") as config_file:

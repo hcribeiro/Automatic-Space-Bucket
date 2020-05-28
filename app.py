@@ -5,23 +5,23 @@ from adafruit_ads1x15.analog_in import AnalogIn
 from gpiozero import LED, DigitalOutputDevice, SmoothedInputDevice
 
 config = []
-dryness_threshold = -1
 logs = []
 app = Flask("SpaceBucket")
 
 @app.route('/')
-def index(light_status='Off', plant='N/a'):
+def index(light_status='Off', plant='N/a', notes=''):
     plant = config['plant']
+    notes = config['notes']
     now = datetime.datetime.now().time() 
     if (time_in_range(startTime, endTime, now)):
         light_status = 'On'
     elif not (time_in_range(startTime, endTime, now)):
         light_status = 'Off'
-    return render_template('dashboard.html', humidity=humidity, threshold=dryness_threshold, light_status=light_status, startTime=startTime, endTime=endTime, plant=plant)
+    return render_template('dashboard.html', humidity=humidity, threshold=dryness_threshold, light_status=light_status, startTime=startTime, endTime=endTime, plant=plant, notes=notes)
 
 @app.route('/water')
 def water():
-    return render_template('water.html')
+    return render_template('water.html', humidity=humidity, threshold=dryness_threshold)
 
 def load_config():
     with open(os.path.expanduser("~/.bucket/config"), "r") as config_file:
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     ch.setLevel(logging.WARN)
     logger.addHandler(ch)
 
-    global humidity, startTime, endTime
+    global humidity, startTime, endTime, dryness_threshold
     serverThread = threading.Thread(target=app.run, daemon=True, kwargs={'host':'0.0.0.0'})
     serverThread.start()
     config = load_config()
@@ -56,27 +56,29 @@ if __name__ == '__main__':
     sensor = AnalogIn(ads, ADS.P0)
     startTime = datetime.datetime.now().time()
     endTime = (datetime.datetime.now() + datetime.timedelta(hours=float(config['sunHours']))).time()
-    while(True):
-        humidity = sensor.value
-        now = datetime.datetime.now().time() 
-        if (time_in_range(startTime, endTime, now)):
-            led.on()
-            fans.on()
-            logger.info("LED turned on!")
-        elif not (time_in_range(startTime, endTime, now)):
-            led.off()
-            fans.off()
-            logger.info("LED turned off!")
-        if (sensor.value > dryness_threshold):
-            pumps.on()
-            logger.info("Pump turned on!")
-        else:
-            pumps.off()
-            logger.info("Pump turned off!")
-        logger.debug("Time Now: " + str(now))
-        logger.debug("Start Time: " + str(startTime))
-        logger.debug("End Time: " + str(endTime))
-        logger.debug("Sensor: " + str(sensor.value))
-        logger.debug("Threshold: " + str(dryness_threshold))
-        time.sleep(10)
-    serverThread.join()
+    try:
+        while(True):
+            humidity = sensor.value
+            now = datetime.datetime.now().time() 
+            if (time_in_range(startTime, endTime, now)):
+                led.on()
+                fans.on()
+                logger.info("LED turned on!")
+            elif not (time_in_range(startTime, endTime, now)):
+                led.off()
+                fans.off()
+                logger.info("LED turned off!")
+            if (sensor.value > dryness_threshold):
+                pumps.on()
+                logger.info("Pump turned on!")
+            else:
+                pumps.off()
+                logger.info("Pump turned off!")
+            logger.debug("Time Now: " + str(now))
+            logger.debug("Start Time: " + str(startTime))
+            logger.debug("End Time: " + str(endTime))
+            logger.debug("Sensor: " + str(sensor.value))
+            logger.debug("Threshold: " + str(dryness_threshold))
+            time.sleep(10)
+    except KeyboardInterrupt:
+        serverThread.join()

@@ -81,4 +81,4 @@ if __name__ == '__main__':
             logger.debug("Threshold: " + str(dryness_threshold))
             time.sleep(10)
     except KeyboardInterrupt:
-        serverThread.join()
+        serverThread.join(timeout=10)

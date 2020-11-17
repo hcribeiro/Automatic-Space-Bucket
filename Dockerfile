@@ -1,8 +1,8 @@
 # Pull base image
-FROM raspbian/jessie
+FROM desktopcontainers/raspberrypi
 
 # Install dependencies
-RUN apt-get update && apt-get install -y python3 wget python-rpi.gpio
+RUN sudo apt-get update && sudo apt-get install -y python3 wget python-pip python3-dev
 RUN wget https://bootstrap.pypa.io/get-pip.py
 RUN python3 get-pip.py
 
@@ -15,6 +15,7 @@ WORKDIR /data
 COPY * /data/
 
 # Donwload libraries
+RUN pip3 install RPi.GPIO
 RUN pip3 install --upgrade setuptools
 RUN pip3 install -r requirements.txt
 
